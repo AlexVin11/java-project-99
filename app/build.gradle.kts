@@ -1,7 +1,11 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
 	java
 	checkstyle
 	application
+	jacoco
 	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 }
@@ -23,8 +27,25 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation(platform("org.junit:junit-bom:5.10.0"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.assertj:assertj-core:3.22.0")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.test {
+	useJUnitPlatform()
+	// https://technology.lastminute.com/junit5-kotlin-and-gradle-dsl/
+	testLogging {
+		exceptionFormat = TestExceptionFormat.FULL
+		events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+		// showStackTraces = true
+		// showCauses = true
+		showStandardStreams = true
+	}
+}
+
+tasks.jacocoTestReport { reports { xml.required.set(true) } }
