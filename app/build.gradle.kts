@@ -23,6 +23,10 @@ repositories {
 	mavenCentral()
 }
 
+application {
+	mainClass.set("hexlet.code.app.AppApplication")
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
