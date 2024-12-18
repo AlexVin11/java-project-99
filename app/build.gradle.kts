@@ -6,6 +6,7 @@ plugins {
 	checkstyle
 	application
 	jacoco
+	id("io.freefair.lombok") version "8.6"
 	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 }
