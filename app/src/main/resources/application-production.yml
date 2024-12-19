@@ -5,7 +5,7 @@ spring:
     activate:
       on-profile: production
   datasource:
-    url: postgresql://taskmanageronspring_user:3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS@dpg-ctgpqtij1k6c73a5dea0-a/taskmanageronspring
+    url: jdbc:postgresql://taskmanageronspring_user:3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS@dpg-ctgpqtij1k6c73a5dea0-a/taskmanageronspring
     dialect_class_name: org.postgresql.Driver
     username: taskmanageronspring_user
     password: 3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS
