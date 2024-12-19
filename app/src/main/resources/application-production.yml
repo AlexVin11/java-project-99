@@ -6,7 +6,7 @@ spring:
       on-profile: production
   datasource:
     url: postgresql://taskmanageronspring_user:3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS@dpg-ctgpqtij1k6c73a5dea0-a/taskmanageronspring
-    driver-class-name: org.postgresql.Driver
+    dialect_class_name: org.postgresql.Driver
     username: taskmanageronspring_user
     password: 3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS
     port: 5432
