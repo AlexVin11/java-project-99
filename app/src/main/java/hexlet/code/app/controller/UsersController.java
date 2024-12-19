@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
-@RestController()
+@RestController
 @RequestMapping("/users")
 public class UsersController {
 
@@ -23,13 +23,8 @@ public class UsersController {
         return userRepository.findAll();
     }
 
-    @GetMapping()
+    @GetMapping("/{id}")
     public Optional<User> show(@PathVariable Long id) {
         return userRepository.findById(id);
-    }
-
-    @GetMapping()
-    public Optional<User> show(@PathVariable String email) {
-        return  userRepository.findByEmail(email);
     }
 }
