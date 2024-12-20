@@ -1,7 +1,9 @@
 ---
 
 spring:
-  profiles: production
+  config:
+    activate:
+      on-profile: production
   datasource:
     url: jdbc:postgresql://dpg-ctgpqtij1k6c73a5dea0-a:5432/taskmanageronspring
     driver-class-name: org.postgresql.Driver
