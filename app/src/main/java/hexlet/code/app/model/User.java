@@ -35,17 +35,23 @@ public class User implements UserDetails, BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
+
     private String firstName;
+
     private String lastName;
+
     @Column(unique = true)
     @NotNull
     @Email
     private String email;
+
     @NotNull
     @Size(min = 3)
     private String password;
+
     @CreatedDate
     private LocalDate createdAt;
+
     @LastModifiedDate
     private LocalDate updatedAt;
 
