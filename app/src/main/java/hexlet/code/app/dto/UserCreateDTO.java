@@ -12,8 +12,11 @@ public class UserCreateDTO {
     @NotNull
     @Email
     private String email;
+
     private String firstName;
+
     private String lastName;
+
     @NotNull
     @Size(min = 3)
     private String password;
