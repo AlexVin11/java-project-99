@@ -39,7 +39,9 @@ public class CustomUserDetailsService implements UserDetailsManager {
             user.setPassword(cryptedPassword);
             userRepository.save(user);
         } else {
-            throw new ResourceAlreadyExistException("Admin user with email: " + userData.getUsername() + " already exist.");
+            throw new ResourceAlreadyExistException("Admin user with email: " +
+                    userData.getUsername() +
+                    " already exist.");
         }
     }
 
