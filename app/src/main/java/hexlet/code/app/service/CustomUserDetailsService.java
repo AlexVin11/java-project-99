@@ -1,8 +1,6 @@
 package hexlet.code.app.service;
 
 import hexlet.code.app.config.EncodersConfig;
-import hexlet.code.app.exception.ResourceAlreadyExistException;
-import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,18 +29,7 @@ public class CustomUserDetailsService implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails userData) {
-        if (!userRepository.findByEmail(userData.getUsername()).isPresent()) {
-            User user = new User();
-            PasswordEncoder encoder = encodersConfig.passwordEncoder();
-            String cryptedPassword = encoder.encode(userData.getPassword());
-            user.setEmail(userData.getUsername());
-            user.setPassword(cryptedPassword);
-            userRepository.save(user);
-        } else {
-            throw new ResourceAlreadyExistException("Admin user with email: "
-                    + userData.getUsername()
-                    + " already exist.");
-        }
+        throw new UnsupportedOperationException("Unimplemented method 'createUser'");
     }
 
     @Override
