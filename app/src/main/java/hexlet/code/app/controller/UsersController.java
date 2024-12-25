@@ -20,38 +20,38 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/users")
 public class UsersController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping()
     public List<UserDTO> index() {
         return userService.getAll();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public UserDTO show(@PathVariable Long id) {
         return userService.getById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO create(@Valid @RequestBody UserCreateDTO userData) {
         var dto = userService.create(userData);
         return dto;
     }
 
-    @PutMapping("/users")
-    public UserDTO update(@Valid @RequestBody UserUpdateDTO userData, Long id) {
+    @PutMapping("/{id}")
+    public UserDTO update(@Valid @RequestBody UserUpdateDTO userData, @PathVariable Long id) {
         var dto = userService.update(userData, id);
         return dto;
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Long id) {
+    public void delete(@PathVariable Long id) {
         userService.delete(id);
     }
 }
