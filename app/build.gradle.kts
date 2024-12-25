@@ -47,8 +47,9 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation(platform("org.junit:junit-bom:5.10.0"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.assertj:assertj-core:3.22.0")
-	implementation("net.datafaker:datafaker:2.0.1")
+	testImplementation("org.assertj:assertj-core:3.26.3")
+	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
+	implementation("net.datafaker:datafaker:2.0.2")
 	implementation("org.instancio:instancio-junit:3.3.0")
 }
 
