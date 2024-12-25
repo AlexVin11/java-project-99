@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserCreateDTO {
+    @NotNull
     @Email
     private String email;
 
