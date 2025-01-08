@@ -19,4 +19,9 @@ public class UserUtils {
         var email = authentification.getName();
         return userRepository.findByEmail(email).get();
     }
+
+    public User getTestUser() {
+        return  userRepository.findByEmail("hexlet@example.com")
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }
