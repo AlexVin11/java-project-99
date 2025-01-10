@@ -15,6 +15,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - uses: gradle/gradle-build-action@v3
+        env:
+          RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
         with:
           gradle-version: 8.5
           arguments: build
