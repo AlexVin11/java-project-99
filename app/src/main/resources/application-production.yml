@@ -1,9 +1,10 @@
 ---
 
+logging:
+  level:
+    root: INFO
+
 spring:
-  config:
-    activate:
-      on-profile: production
   datasource:
     url: jdbc:postgresql://dpg-ctgpqtij1k6c73a5dea0-a:5432/taskmanageronspring
     driver-class-name: org.postgresql.Driver
@@ -14,6 +15,3 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
-logging:
-  level:
-    root: INFO

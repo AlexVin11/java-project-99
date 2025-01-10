@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,9 @@ public class User implements UserDetails, BaseEntity {
     @NotBlank
     @Size(min = 3)
     private String password;
+
+    @Version
+    private Long version;
 
     @CreatedDate
     private LocalDate createdAt;

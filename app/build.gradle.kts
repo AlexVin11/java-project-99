@@ -43,6 +43,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.security:spring-security-config:6.4.2")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation(platform("org.junit:junit-bom:5.10.0"))
