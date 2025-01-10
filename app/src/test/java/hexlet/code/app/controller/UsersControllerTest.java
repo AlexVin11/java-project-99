@@ -68,7 +68,6 @@ public class UsersControllerTest {
                 .build();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
-        //userRepository.save(testUser);
     }
 
     @Test
@@ -82,7 +81,7 @@ public class UsersControllerTest {
 
     @Test
     public void testIndexUsers() throws Exception {
-        var result = mockMvc.perform(get("/users").with(token))
+        var result = mockMvc.perform(get("/api/users").with(token))
                 .andExpect(status().isOk())
                 .andReturn();
         var body = result.getResponse().getContentAsString();
@@ -90,22 +89,8 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testShowUser() throws Exception {
-        userRepository.save(testUser);
-        var request = get("/users/" + testUser.getId());
-        var result = mockMvc.perform(request.with(token))
-                .andExpect(status().isOk())
-                .andReturn();
-        var body = result.getResponse().getContentAsString();
-        assertThatJson(body).and(
-                v -> v.node("id").isEqualTo(testUser.getId()),
-                v -> v.node("email").isEqualTo(testUser.getEmail())
-        );
-    }
-
-    @Test
     public void testCreateUser() throws Exception {
-        var request = post("/users")
+        var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testUser));
         var result = mockMvc.perform(request.with(token))
@@ -118,10 +103,29 @@ public class UsersControllerTest {
     }
 
     @Test
+    public void testShowUser() throws Exception {
+        var createUserRequest = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testUser));
+        mockMvc.perform(createUserRequest.with(token));
+        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
+        var getUserRequest = get("/api/users/{id}", createdUser.getId());
+        var result = mockMvc.perform(getUserRequest.with(token))
+                .andExpect(status().isOk())
+                .andReturn();
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).and(
+                v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
+                v -> v.node("lastName").isEqualTo(testUser.getLastName()),
+                v -> v.node("email").isEqualTo(testUser.getEmail())
+        );
+    }
+
+    @Test
     public void testCreateUserWithNotCorrectEmail() throws Exception {
         var dto = userMapper.map(testUser);
         dto.setEmail("qwerty");
-        var request = post("/users")
+        var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(dto));
         mockMvc.perform(request.with(token)).andExpect(status().isBadRequest());
@@ -131,12 +135,18 @@ public class UsersControllerTest {
     public void testUpdateUser() throws Exception {
         var dto = new UserUpdateDTO();
         dto.setEmail(JsonNullable.of("someguy14@gmail.com"));
-        var request = put("/users/{id}", testUser.getId())
+        var createUserRequest = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testUser));
+        mockMvc.perform(createUserRequest.with(token));
+        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
+        var request = put("/api/users/{id}", createdUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(dto));
-        mockMvc.perform(request).andExpect(status().isOk());
-        var user = userRepository.findById(testUser.getId()).get();
-        assertThatJson(user).and(
+        mockMvc.perform(request.with(token)).andExpect(status().isOk());
+        var updatedUser = userRepository.findById(createdUser.getId()).get();
+        assertThatJson(updatedUser).and(
+                v -> v.node("id").isEqualTo(createdUser.getId()),
                 v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
                 v -> v.node("lastName").isEqualTo(testUser.getLastName()),
                 v -> v.node("email").isEqualTo(dto.getEmail())
@@ -145,8 +155,13 @@ public class UsersControllerTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        var request = delete("/users/{id}", testUser.getId());
-        mockMvc.perform(request).andExpect(status().isNoContent());
-        assertThat(userRepository.existsById(testUser.getId())).isFalse();
+        var createUserRequest = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testUser));
+        mockMvc.perform(createUserRequest.with(token));
+        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
+        var request = delete("/api/users/{id}", createdUser.getId());
+        mockMvc.perform(request.with(token)).andExpect(status().isNoContent());
+        assertThat(userRepository.existsById(createdUser.getId())).isFalse();
     }
 }
