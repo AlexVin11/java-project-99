@@ -4,9 +4,11 @@ import hexlet.code.app.dto.UserCreateDTO;
 import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.service.UserService;
+import hexlet.code.app.util.UserUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,9 @@ public class UsersController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserUtils userUtils;
+
     @GetMapping()
     public List<UserDTO> index() {
         return userService.getAll();
@@ -44,6 +49,7 @@ public class UsersController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("@userUtils.isCurrentUser(#id)")
     public UserDTO update(@Valid @RequestBody UserUpdateDTO userData, @PathVariable Long id) {
         var dto = userService.update(userData, id);
         return dto;
@@ -51,6 +57,7 @@ public class UsersController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@userUtils.isCurrentUser(#id)")
     public void delete(@PathVariable Long id) {
         userService.delete(id);
     }

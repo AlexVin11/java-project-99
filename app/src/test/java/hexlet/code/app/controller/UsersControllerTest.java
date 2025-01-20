@@ -1,6 +1,7 @@
 package hexlet.code.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.app.dto.UserDTO;
 import hexlet.code.app.dto.UserUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
@@ -62,6 +63,8 @@ public class UsersControllerTest {
 
     @BeforeEach
     public void setUp() {
+        userRepository.deleteAll();
+
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
@@ -86,6 +89,9 @@ public class UsersControllerTest {
                 .andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
+        var amountOfUsersInDb = userRepository.count();
+        var amountOfUsersInResponse = objectMapper.readValue(body, UserDTO[].class).length;
+        assertThat(amountOfUsersInDb == amountOfUsersInResponse);
     }
 
     @Test
@@ -93,8 +99,7 @@ public class UsersControllerTest {
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testUser));
-        var result = mockMvc.perform(request.with(token))
-                .andExpect(status().isCreated());
+        mockMvc.perform(request).andExpect(status().isCreated());
         var user = userRepository.findByEmail(testUser.getEmail()).get();
         assertThat(user).isNotNull();
         assertThat(user.getEmail()).isEqualTo(testUser.getEmail());
@@ -107,7 +112,7 @@ public class UsersControllerTest {
         var createUserRequest = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest.with(token));
+        mockMvc.perform(createUserRequest);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
         var getUserRequest = get("/api/users/{id}", createdUser.getId());
         var result = mockMvc.perform(getUserRequest.with(token))
@@ -127,41 +132,53 @@ public class UsersControllerTest {
         dto.setEmail("qwerty");
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(dto));
+                .content(objectMapper.writeValueAsString(dto));
         mockMvc.perform(request.with(token)).andExpect(status().isBadRequest());
     }
 
     @Test
     public void testUpdateUser() throws Exception {
-        var dto = new UserUpdateDTO();
-        dto.setEmail(JsonNullable.of("someguy14@gmail.com"));
+        var updateDTO = new UserUpdateDTO();
+        updateDTO.setEmail(JsonNullable.of("someguy14@gmail.com"));
         var createUserRequest = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest.with(token));
+        mockMvc.perform(createUserRequest);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
-        var request = put("/api/users/{id}", createdUser.getId())
+        var updateUserRequest = put("/api/users/{id}", createdUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(dto));
-        mockMvc.perform(request.with(token)).andExpect(status().isOk());
+                .content(objectMapper.writeValueAsString(updateDTO));
+        mockMvc.perform(updateUserRequest.with(token)).andExpect(status().isOk());
         var updatedUser = userRepository.findById(createdUser.getId()).get();
         assertThatJson(updatedUser).and(
                 v -> v.node("id").isEqualTo(createdUser.getId()),
                 v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
                 v -> v.node("lastName").isEqualTo(testUser.getLastName()),
-                v -> v.node("email").isEqualTo(dto.getEmail())
+                v -> v.node("email").isEqualTo(updateDTO.getEmail())
         );
     }
 
     @Test
-    public void testDeleteUser() throws Exception {
+    public void testDeleteUserCorrectToken() throws Exception {
         var createUserRequest = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest.with(token));
+        mockMvc.perform(createUserRequest);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
-        var request = delete("/api/users/{id}", createdUser.getId());
-        mockMvc.perform(request.with(token)).andExpect(status().isNoContent());
+        var deleteUserRequest = delete("/api/users/{id}", createdUser.getId());
+        mockMvc.perform(deleteUserRequest.with(token)).andExpect(status().isNoContent());
         assertThat(userRepository.existsById(createdUser.getId())).isFalse();
+    }
+
+    @Test
+    public void testDeleteUserIncorrectToken() throws Exception {
+        var createUserRequest = post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testUser));
+        mockMvc.perform(createUserRequest);
+        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
+        var deleteUserRequest = delete("/api/users/{id}", createdUser.getId());
+        var incorrectToken = jwt().jwt(builder -> builder.subject("lumpa14@mail.ru"));
+        mockMvc.perform(deleteUserRequest.with(incorrectToken)).andExpect(status().isForbidden());
     }
 }
