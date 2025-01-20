@@ -6,10 +6,10 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-ctgpqtij1k6c73a5dea0-a:5432/taskmanageronspring
+    url: jdbc:postgresql://dpg-cu57c5tds78s73e0rqrg-a:5432/updatedtaskmanageronspring
     driver-class-name: org.postgresql.Driver
-    username: taskmanageronspring_user
-    password: 3MCGi0BamwU85r5fMn6sf2e5O1uc1FaS
+    username: updatedtaskmanageronspring_user
+    password: DC613unqgMzjVNp6XPwEZk0mqzGlRU0d
   jpa:
     generate-ddl: true
     hibernate:
