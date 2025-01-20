@@ -16,7 +16,6 @@ import java.util.Base64;
 @Setter
 @Getter
 public class RsaKeyProperties {
-
     private RSAPublicKey rsaPublicKey;
     private RSAPrivateKey rsaPrivateKey;
 
