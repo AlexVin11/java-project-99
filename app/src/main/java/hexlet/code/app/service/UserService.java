@@ -10,10 +10,11 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class UserService {
@@ -30,12 +31,8 @@ public class UserService {
     @Autowired
     private UserUtils userUtils;
 
-    public List<UserDTO> getAll() {
-        var users = userRepository.findAll();
-        var result = users.stream()
-                .map(userMapper::map)
-                .toList();
-        return result;
+    public Page<UserDTO> getAll(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::map);
     }
 
     public UserDTO getById(Long id) {
