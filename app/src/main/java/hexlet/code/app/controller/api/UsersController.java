@@ -8,6 +8,7 @@ import hexlet.code.app.util.UserUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +33,10 @@ public class UsersController {
     private UserUtils userUtils;
 
     @GetMapping()
-    public List<UserDTO> index() {
-        return userService.getAll();
+    public ResponseEntity<List<UserDTO>> index() {
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(userService.getAll()))
+                .body(userService.getAll());
     }
 
     @GetMapping("/{id}")
