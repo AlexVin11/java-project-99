@@ -1,20 +1,68 @@
 package hexlet.code.app.component;
 
 import hexlet.code.app.config.EncodersConfig;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 @Component
-public class AppInitializer {
+public final class AppInitializer {
     private static final String ADMIN_EMAIL = "hexlet@example.com";
     private static final String ADMIN_PASSWORD = "qwerty";
+    public static final List<String> DEFAULT_TASK_STATUSES_SLUGS_LIST =
+            new LinkedList<>(
+                    Arrays.asList(
+                            "draft",
+                            "to_review",
+                            "to_be_fixed",
+                            "to_publish",
+                            "published"
+                    )
+            );
+    public static final List<String> DEFAULT_TASK_STATUSES_NAMES_LIST =
+            new LinkedList<>(
+                    Arrays.asList(
+                            "Draft",
+                            "ToReview",
+                            "ToBeFixed",
+                            "ToPublish",
+                            "Published"
+                    )
+            );
+
+    public static final Map<String, String> DEFAULT_TASK_STATUSES_SLUGS_AND_NAMES_MAP =
+            new LinkedHashMap<>(
+                    Map.of(
+                            "draft",
+                            "Draft",
+                            "to_review",
+                            "ToReview",
+                            "to_be_fixed",
+                            "ToBeFixed",
+                            "to_publish",
+                            "ToPublish",
+                            "published",
+                            "Published"
+                    ));
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
     private EncodersConfig encodersConfig;
@@ -28,6 +76,13 @@ public class AppInitializer {
                 admin.setEmail(ADMIN_EMAIL);
                 admin.setPassword(encodersConfig.passwordEncoder().encode(ADMIN_PASSWORD));
                 userRepository.save(admin);
+            }
+            var entries = DEFAULT_TASK_STATUSES_SLUGS_AND_NAMES_MAP.entrySet();
+            for (var entry : entries) {
+                if (taskStatusRepository.findBySlug(entry.getKey()).isEmpty()) {
+                    TaskStatus taskStatus = new TaskStatus(entry.getKey(), entry.getValue());
+                    taskStatusRepository.save(taskStatus);
+                }
             }
         };
     }
