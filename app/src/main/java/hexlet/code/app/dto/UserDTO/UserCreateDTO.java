@@ -1,4 +1,4 @@
-package hexlet.code.app.dto;
+package hexlet.code.app.dto.UserDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,21 +6,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.openapitools.jackson.nullable.JsonNullable;
 
 @Getter
 @Setter
-public class UserUpdateDTO {
+public final class UserCreateDTO {
     @NotNull
     @Email
-    private JsonNullable<String> email;
+    private String email;
 
-    private JsonNullable<String> firstName;
+    private String firstName;
 
-    private JsonNullable<String> lastName;
+    private String lastName;
 
     @NotNull
     @NotBlank
     @Size(min = 3)
-    private JsonNullable<String> password;
+    private String password;
 }
