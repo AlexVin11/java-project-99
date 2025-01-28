@@ -10,7 +10,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsManager {
+public final class CustomUserDetailsService implements UserDetailsManager {
     @Autowired
     private EncodersConfig encodersConfig;
 

@@ -26,6 +26,11 @@ public class UserUtils {
         return emailOfUser.equals(authentication.getName());
     }
 
+    public boolean userHasAuthentication() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated();
+    }
+
     public User getTestUser() {
         return  userRepository.findByEmail("hexlet@example.com")
                 .orElseThrow(() -> new RuntimeException("User not found"));

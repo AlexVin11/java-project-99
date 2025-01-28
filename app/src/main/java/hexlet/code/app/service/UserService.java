@@ -1,14 +1,13 @@
 package hexlet.code.app.service;
 
 import hexlet.code.app.config.EncodersConfig;
-import hexlet.code.app.dto.UserCreateDTO;
-import hexlet.code.app.dto.UserDTO;
-import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.dto.UserDTO.UserCreateDTO;
+import hexlet.code.app.dto.UserDTO.UserDTO;
+import hexlet.code.app.dto.UserDTO.UserUpdateDTO;
 import hexlet.code.app.exception.ResourceNotFoundException;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
-import hexlet.code.app.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserService {
+public final class UserService {
 
     @Autowired
     private EncodersConfig encodersConfig;
@@ -26,9 +25,6 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private UserUtils userUtils;
 
     public List<UserDTO> getAll() {
         var users = userRepository.findAll();

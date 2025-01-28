@@ -1,10 +1,11 @@
-package hexlet.code.app.controller;
+package hexlet.code.app.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.app.dto.UserDTO;
-import hexlet.code.app.dto.UserUpdateDTO;
+import hexlet.code.app.dto.UserDTO.UserDTO;
+import hexlet.code.app.dto.UserDTO.UserUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
 import hexlet.code.app.util.UserUtils;
@@ -52,6 +53,9 @@ public class UsersControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     @Autowired
@@ -64,6 +68,7 @@ public class UsersControllerTest {
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
+        taskStatusRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
@@ -71,15 +76,6 @@ public class UsersControllerTest {
                 .build();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
-    }
-
-    @Test
-    public void testWelcome() throws Exception {
-        var result = mockMvc.perform(get("/welcome"))
-                .andExpect(status().isOk())
-                .andReturn();
-        var body = result.getResponse().getContentAsString();
-        assertThat(body.contains("Welcome"));
     }
 
     @Test

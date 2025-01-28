@@ -1,15 +1,15 @@
 package hexlet.code.app.controller.api;
 
-import hexlet.code.app.dto.UserDTO.UserCreateDTO;
-import hexlet.code.app.dto.UserDTO.UserDTO;
-import hexlet.code.app.dto.UserDTO.UserUpdateDTO;
-import hexlet.code.app.service.UserService;
+import hexlet.code.app.dto.TaskStatusDTO.TaskStatusCreateDTO;
+import hexlet.code.app.dto.TaskStatusDTO.TaskStatusDTO;
+import hexlet.code.app.dto.TaskStatusDTO.TaskStatusUpdateDTO;
+import hexlet.code.app.service.TaskStatusService;
 import hexlet.code.app.util.UserUtils;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,44 +23,44 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
-public class UsersController {
-    @Autowired
-    private UserService userService;
-
+@RequestMapping("/api/task_statuses")
+@Slf4j
+public final class TaskStatusController {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private TaskStatusService taskStatusService;
+
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> index() {
+    public ResponseEntity<List<TaskStatusDTO>> index() {
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(userService.getAll()))
-                .body(userService.getAll());
+                .header("X-Total-Count", String.valueOf(taskStatusService.getAll()))
+                .body(taskStatusService.getAll());
     }
 
     @GetMapping("/{id}")
-    public UserDTO show(@PathVariable Long id) {
-        return userService.getById(id);
+    public TaskStatusDTO show(@PathVariable Long id) {
+        return taskStatusService.getById(id);
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO create(@Valid @RequestBody UserCreateDTO userData) {
-        var dto = userService.create(userData);
+    public TaskStatusDTO create(@Valid @RequestBody TaskStatusCreateDTO taskStatusData) {
+        var dto = taskStatusService.create(taskStatusData);
+        log.info("Created Dtd id " + dto.getId());
         return dto;
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@userUtils.isCurrentUser(#id)")
-    public UserDTO update(@Valid @RequestBody UserUpdateDTO userData, @PathVariable Long id) {
-        var dto = userService.update(userData, id);
+    public TaskStatusDTO update(@Valid @RequestBody TaskStatusUpdateDTO taskStatusData, @PathVariable Long id) {
+        var dto = taskStatusService.update(taskStatusData, id);
         return dto;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@userUtils.isCurrentUser(#id)")
     public void delete(@PathVariable Long id) {
-        userService.delete(id);
+        taskStatusService.delete(id);
     }
 }
