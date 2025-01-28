@@ -21,10 +21,4 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<String> handleUnprocessableResourceException(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.getMessage());
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> hndler(Exception ex) {
-        log.error("Error: ", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-    }
 }
