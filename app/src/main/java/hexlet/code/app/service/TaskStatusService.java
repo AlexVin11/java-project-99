@@ -40,7 +40,6 @@ public final class TaskStatusService {
         taskStatusRepository.save(model);
         TaskStatusDTO dto = taskStatusMapper.map(model);
         return dto;
-        //here if save 2 same slug - 422 should be thrown. Point for check
     }
 
     public TaskStatusDTO update(TaskStatusUpdateDTO taskStatusData, Long id) {
