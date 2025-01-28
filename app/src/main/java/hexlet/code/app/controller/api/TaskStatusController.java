@@ -6,7 +6,6 @@ import hexlet.code.app.dto.TaskStatusDTO.TaskStatusUpdateDTO;
 import hexlet.code.app.service.TaskStatusService;
 import hexlet.code.app.util.UserUtils;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/task_statuses")
-@Slf4j
 public final class TaskStatusController {
     @Autowired
     private UserUtils userUtils;
@@ -35,7 +33,7 @@ public final class TaskStatusController {
     @GetMapping()
     public ResponseEntity<List<TaskStatusDTO>> index() {
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(taskStatusService.getAll()))
+                .header("X-Total-Count", String.valueOf(taskStatusService.getAll().size()))
                 .body(taskStatusService.getAll());
     }
 
@@ -48,7 +46,6 @@ public final class TaskStatusController {
     @ResponseStatus(HttpStatus.CREATED)
     public TaskStatusDTO create(@Valid @RequestBody TaskStatusCreateDTO taskStatusData) {
         var dto = taskStatusService.create(taskStatusData);
-        log.info("Created Dtd id " + dto.getId());
         return dto;
     }
 
