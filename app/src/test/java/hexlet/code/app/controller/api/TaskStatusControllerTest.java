@@ -110,7 +110,6 @@ class TaskStatusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testTaskStatus));
         mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isCreated());
-        //400 по факту
         var createdTaskStatus = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get();
         var getTaskStatusRequest = get("/api/task_statuses/{id}", createdTaskStatus.getId());
         var result = mockMvc.perform(getTaskStatusRequest.with(token))
@@ -148,7 +147,8 @@ class TaskStatusControllerTest {
         var createTaskStatusRequest = post("/api/task_statuses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testTaskStatus));
-        mockMvc.perform(createTaskStatusRequest.with(token));
+        mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isCreated());
+        assertThat(taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get()).isNotNull();
         mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isUnprocessableEntity());
     }
 
@@ -165,12 +165,9 @@ class TaskStatusControllerTest {
         var updateRequest = put("/api/task_statuses/{id}", createdTaskStatus.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskStatusUpdateDTO));
-        mockMvc.perform(updateRequest.with(token)).andExpect(status().isOk()).andReturn();
-        var result = mockMvc.perform(get("/api/task_statuses/{id}", createdTaskStatus.getId()).with(token))
-                .andExpect(status().isOk())
-                .andReturn();
-        var body = result.getResponse().getContentAsString();
-        assertThatJson(body).and(
+        mockMvc.perform(updateRequest.with(token)).andExpect(status().isOk());
+        var updatedTaskStatus = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get();
+        assertThatJson(updatedTaskStatus).and(
                 v -> v.node("name").isEqualTo(taskStatusUpdateDTO.getName()),
                 v -> v.node("slug").isEqualTo(testTaskStatus.getSlug())
         );
@@ -182,7 +179,6 @@ class TaskStatusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testTaskStatus));
         mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isCreated());
-        //400
         var createdTaskStatus = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get();
         var deleteRequest = delete("/api/task_statuses/{id}", createdTaskStatus.getId());
         mockMvc.perform(deleteRequest.with(token)).andExpect(status().isNoContent());
