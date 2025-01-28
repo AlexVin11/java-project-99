@@ -35,8 +35,8 @@ public class ModelGenerator {
                 .ignore(Select.field(TaskStatus::getId))
                 .ignore(Select.field(TaskStatus::getCreatedAt))
                 .ignore(Select.field(TaskStatus::getUpdatedAt))
-                .supply(Select.field(TaskStatus::getName), () -> faker.lorem().characters(1, 10, true, true))
-                .supply(Select.field(TaskStatus::getSlug), () -> faker.lorem().characters(1, 10, true, true))
+                .supply(Select.field(TaskStatus::getName), () -> faker.name().name())
+                .supply(Select.field(TaskStatus::getName), () -> faker.name().name())
                 .toModel();
     }
 }
