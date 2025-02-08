@@ -2,14 +2,15 @@ package hexlet.code.app.util;
 
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class UserUtils {
-    @Autowired
-    private UserRepository userRepository;
+@RequiredArgsConstructor
+public final class UserUtils {
+    private final UserRepository userRepository;
 
     public User getCurrentUser() {
         var authentification = SecurityContextHolder.getContext().getAuthentication();
