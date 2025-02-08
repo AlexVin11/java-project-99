@@ -5,7 +5,7 @@ import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public final class AppInitializer {
     private static final String ADMIN_EMAIL = "hexlet@example.com";
     private static final String ADMIN_PASSWORD = "qwerty";
+    private final UserRepository userRepository;
+    private final TaskStatusRepository taskStatusRepository;
+    private final EncodersConfig encodersConfig;
 
     public static final Map<String, String> DEFAULT_TASK_STATUSES_SLUGS_AND_NAMES_MAP =
             new LinkedHashMap<>(
@@ -32,15 +36,6 @@ public final class AppInitializer {
                             "published",
                             "Published"
                     ));
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
-
-    @Autowired
-    private EncodersConfig encodersConfig;
 
     @Bean
     CommandLineRunner initialAdmin() {
