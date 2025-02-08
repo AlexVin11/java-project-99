@@ -3,6 +3,8 @@ package hexlet.code.app.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.dto.AuthRequest;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskRepository;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
 import org.instancio.Instancio;
@@ -40,6 +42,12 @@ public class AuthenticationControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     @Autowired
@@ -49,6 +57,8 @@ public class AuthenticationControllerTest {
 
     @BeforeEach
     public void setUp() {
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
         userRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
