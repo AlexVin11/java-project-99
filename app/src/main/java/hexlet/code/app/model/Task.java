@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,30 +24,37 @@ import java.time.LocalDate;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
-@AllArgsConstructor
+@Table(name = "tasks")
 @NoArgsConstructor
-@Table(name = "task_statuses")
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @EntityListeners(AuditingEntityListener.class)
-public final class TaskStatus implements BaseEntity {
+public final class Task implements BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
     @Column
-    @Size(min = 1)
     @NotNull
     @NotBlank
+    @Size(min = 1)
     private String name;
 
-    @Column(unique = true)
-    @Size(min = 1)
+    @Column
+    private Integer index;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @NotNull
-    @NotBlank
-    private String slug;
+    @ManyToOne
+    private TaskStatus taskStatus;
+
+    @ManyToOne
+    private User assignee;
 
     @CreatedDate
     private LocalDate createdAt;
@@ -54,8 +62,8 @@ public final class TaskStatus implements BaseEntity {
     @LastModifiedDate
     private LocalDate updatedAt;
 
-    public TaskStatus(String slug, String name) {
-        this.slug = slug;
+    public Task(String name, TaskStatus taskStatus) {
         this.name = name;
+        this.taskStatus = taskStatus;
     }
 }
