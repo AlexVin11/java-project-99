@@ -1,10 +1,14 @@
 package hexlet.code.app.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.app.component.AppInitializer;
 import hexlet.code.app.dto.UserDTO.UserDTO;
 import hexlet.code.app.dto.UserDTO.UserUpdateDTO;
 import hexlet.code.app.mapper.UserMapper;
+import hexlet.code.app.model.Task;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
@@ -28,10 +32,10 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -56,6 +60,9 @@ public class UsersControllerTest {
     private TaskStatusRepository taskStatusRepository;
 
     @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     @Autowired
@@ -63,10 +70,15 @@ public class UsersControllerTest {
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
+    private TaskStatus testTaskStatus;
+
+    private Task testTask;
+
     private User testUser;
 
     @BeforeEach
     public void setUp() {
+        taskRepository.deleteAll();
         userRepository.deleteAll();
         taskStatusRepository.deleteAll();
 
@@ -76,10 +88,16 @@ public class UsersControllerTest {
                 .build();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+        for (var entry : AppInitializer.DEFAULT_TASK_STATUSES_SLUGS_AND_NAMES_MAP.entrySet()) {
+            TaskStatus taskStatus = new TaskStatus(entry.getKey(), entry.getValue());
+            taskStatusRepository.save(taskStatus);
+        }
+        testTask = Instancio.of(modelGenerator.getTaskModel()).create();
     }
 
     @Test
     public void testIndexUsers() throws Exception {
+        userRepository.save(testUser);
         var result = mockMvc.perform(get("/api/users").with(token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -105,12 +123,8 @@ public class UsersControllerTest {
 
     @Test
     public void testShowUser() throws Exception {
-        var createUserRequest = post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest);
-        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
-        var getUserRequest = get("/api/users/{id}", createdUser.getId());
+        userRepository.save(testUser);
+        var getUserRequest = get("/api/users/{id}", testUser.getId());
         var result = mockMvc.perform(getUserRequest.with(token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -136,10 +150,7 @@ public class UsersControllerTest {
     public void testUpdateUser() throws Exception {
         var updateDTO = new UserUpdateDTO();
         updateDTO.setEmail(JsonNullable.of("someguy14@gmail.com"));
-        var createUserRequest = post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest);
+        userRepository.save(testUser);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
         var updateUserRequest = put("/api/users/{id}", createdUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -156,10 +167,7 @@ public class UsersControllerTest {
 
     @Test
     public void testDeleteUserCorrectToken() throws Exception {
-        var createUserRequest = post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest);
+        userRepository.save(testUser);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
         var deleteUserRequest = delete("/api/users/{id}", createdUser.getId());
         mockMvc.perform(deleteUserRequest.with(token)).andExpect(status().isNoContent());
@@ -168,13 +176,19 @@ public class UsersControllerTest {
 
     @Test
     public void testDeleteUserIncorrectToken() throws Exception {
-        var createUserRequest = post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(testUser));
-        mockMvc.perform(createUserRequest);
+        userRepository.save(testUser);
         var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
         var deleteUserRequest = delete("/api/users/{id}", createdUser.getId());
         var incorrectToken = jwt().jwt(builder -> builder.subject("lumpa14@mail.ru"));
         mockMvc.perform(deleteUserRequest.with(incorrectToken)).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testDeleteUserWithAssignedTask() throws Exception {
+        userRepository.save(testUser);
+        testTask.setAssignee(testUser);
+        taskRepository.save(testTask);
+        var deleteUserRequest = delete("/api/users/{id}", testUser.getId());
+        mockMvc.perform(deleteUserRequest.with(token)).andExpect(status().isUnprocessableEntity());
     }
 }
