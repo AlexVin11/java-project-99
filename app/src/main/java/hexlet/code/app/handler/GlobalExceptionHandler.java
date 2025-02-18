@@ -19,4 +19,10 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<String> handleUnprocessableResourceException(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.getMessage());
     }
+    //закомментировал потому что падает ошибка
+    // в тесте удаление пользователя с невереным токеном (с этим эендлером падает 500)
+    /*@ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleAllOtherExceptions(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }*/
 }
