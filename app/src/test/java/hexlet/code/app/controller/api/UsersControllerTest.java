@@ -8,6 +8,7 @@ import hexlet.code.app.mapper.UserMapper;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
@@ -63,6 +64,9 @@ public class UsersControllerTest {
     private TaskRepository taskRepository;
 
     @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     @Autowired
@@ -81,6 +85,7 @@ public class UsersControllerTest {
         taskRepository.deleteAll();
         userRepository.deleteAll();
         taskStatusRepository.deleteAll();
+        labelRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
@@ -148,17 +153,16 @@ public class UsersControllerTest {
 
     @Test
     public void testUpdateUser() throws Exception {
-        var updateDTO = new UserUpdateDTO();
-        updateDTO.setEmail(JsonNullable.of("someguy14@gmail.com"));
         userRepository.save(testUser);
-        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
-        var updateUserRequest = put("/api/users/{id}", createdUser.getId())
+        UserUpdateDTO updateDTO = new UserUpdateDTO();
+        updateDTO.setEmail(JsonNullable.of("someguy14@gmail.com"));
+        var updateUserRequest = put("/api/users/{id}", testUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDTO));
         mockMvc.perform(updateUserRequest.with(token)).andExpect(status().isOk());
-        var updatedUser = userRepository.findById(createdUser.getId()).get();
+        var updatedUser = userRepository.findById(testUser.getId()).get();
         assertThatJson(updatedUser).and(
-                v -> v.node("id").isEqualTo(createdUser.getId()),
+                v -> v.node("id").isEqualTo(testUser.getId()),
                 v -> v.node("firstName").isEqualTo(testUser.getFirstName()),
                 v -> v.node("lastName").isEqualTo(testUser.getLastName()),
                 v -> v.node("email").isEqualTo(updateDTO.getEmail())
@@ -177,8 +181,7 @@ public class UsersControllerTest {
     @Test
     public void testDeleteUserIncorrectToken() throws Exception {
         userRepository.save(testUser);
-        var createdUser = userRepository.findByEmail(testUser.getEmail()).get();
-        var deleteUserRequest = delete("/api/users/{id}", createdUser.getId());
+        var deleteUserRequest = delete("/api/users/{id}", testUser.getId());
         var incorrectToken = jwt().jwt(builder -> builder.subject("lumpa14@mail.ru"));
         mockMvc.perform(deleteUserRequest.with(incorrectToken)).andExpect(status().isForbidden());
     }
