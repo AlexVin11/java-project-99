@@ -3,6 +3,7 @@ package hexlet.code.app.controller.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.dto.AuthRequest;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
@@ -48,6 +49,9 @@ public class AuthenticationControllerTest {
     private TaskRepository taskRepository;
 
     @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     @Autowired
@@ -60,6 +64,7 @@ public class AuthenticationControllerTest {
         taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
         userRepository.deleteAll();
+        labelRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
