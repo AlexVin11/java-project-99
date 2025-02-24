@@ -2,6 +2,7 @@ package hexlet.code.app.controller.api;
 
 import hexlet.code.app.dto.TaskDTO.TaskCreateDTO;
 import hexlet.code.app.dto.TaskDTO.TaskDTO;
+import hexlet.code.app.dto.TaskDTO.TaskQueryParamsDTO;
 import hexlet.code.app.dto.TaskDTO.TaskUpdateDTO;
 import hexlet.code.app.service.TaskService;
 import jakarta.validation.Valid;
@@ -27,10 +28,11 @@ public class TasksController {
     private final TaskService taskService;
 
     @GetMapping()
-    public ResponseEntity<List<TaskDTO>> index() {
+    public ResponseEntity<List<TaskDTO>> index(TaskQueryParamsDTO taskQueryParamsDTO) {
+        List<TaskDTO> tasks = taskService.getAll(taskQueryParamsDTO);
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(taskService.getAll().size()))
-                .body(taskService.getAll());
+                .header("X-Total-Count", String.valueOf(tasks.size()))
+                .body(tasks);
     }
 
     @GetMapping("/{id}")
