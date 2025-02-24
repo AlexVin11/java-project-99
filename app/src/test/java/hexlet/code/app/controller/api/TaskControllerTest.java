@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TaskControllerTest {
+    private static final String QUERY_STRING_EXAMPLE = "//https://java-task-manager-ru.hexlet.app/api/tasks"
+            + "?_end=100&_order=ASC&_sort=index&_start=0&"
+            + "assigneeId=1&labelId=2&status=draft&titleCont=ollen";
+
     @Autowired
     private WebApplicationContext wac;
 
@@ -110,7 +115,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    void testIndexTasks() throws Exception {
+    void testIndexTasksWithoutQueryString() throws Exception {
         taskRepository.save(testTask);
         var result = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk())
@@ -121,6 +126,33 @@ public class TaskControllerTest {
         var amountOfTaskFromDb = taskRepository.count();
         assertThat(amountOfTaskFromDb == amountOfTaskFromResponse);
     }
+
+    @Test
+    void testIndexTasksWithQueryTask() throws Exception {
+        taskStatusRepository.save(testTaskStatus);
+        labelRepository.save(testLabel);
+        userRepository.save(testUser);
+        testTask.setAssignee(testUser);
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.getLabels().add(testLabel);
+        testTask.setName("XxXbrx name");
+        taskRepository.save(testTask);
+        StringBuilder query = new StringBuilder("?_end=100&_order=ASC&_sort=index&_start=0");
+        query.append("&assigneeId=" + testUser.getId());
+        query.append("&labelId=" + testLabel.getId());
+        query.append("&status=" + testTaskStatus.getSlug());
+        query.append("&titleCont=" + "xxx");
+        String queryString = query.toString();
+        var result = mockMvc.perform(get("/api/tasks" + queryString).with(token))
+                .andExpect(status().isOk())
+                .andReturn();
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray();
+        List<TaskDTO> response = objectMapper.readValue(body, new TypeReference<>() { });
+        assertThat(response.size() == 1);
+        assertThat(response.contains(taskMapper.map(testTask)));
+    }
+
 
     @Test
     public void testCreateTaskWithoutLabels() throws Exception {
