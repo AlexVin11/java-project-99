@@ -34,8 +34,9 @@ public final class UserUtils {
                     "User  is not authenticated.");
         }
         if (!emailOfUser.equals(authentication.getName())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
-                    "Operation not allowed: user tries to delete another user.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Operation not allowed: user tries to operate with another user."
+                            + "User can operate only with himself");
         }
         return true;
     }
