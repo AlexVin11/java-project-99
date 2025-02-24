@@ -16,6 +16,7 @@ import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
+import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,17 +112,47 @@ public class TaskControllerTest {
     }
 
     @Test
-    void testIndexTasks() throws Exception {
+    void testIndexTasksWithoutQueryString() throws Exception {
         taskRepository.save(testTask);
         var result = mockMvc.perform(get("/api/tasks").with(token))
                 .andExpect(status().isOk())
                 .andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
-        var amountOfTaskFromResponse = objectMapper.readValue(body, TaskDTO[].class).length;
-        var amountOfTaskFromDb = taskRepository.count();
-        assertThat(amountOfTaskFromDb == amountOfTaskFromResponse);
+        List<TaskDTO> taskFromResponse = objectMapper.readValue(body, new TypeReference<>() { });
+        List<Task> tasksFromDb = taskRepository.findAll();
+        List<Task> taskModelFromResponse = taskFromResponse.stream()
+                .map(taskMapper::map)
+                .toList();
+        Assertions.assertThat(tasksFromDb).containsExactlyInAnyOrderElementsOf(taskModelFromResponse);
     }
+
+    @Test
+    void testIndexTasksWithQueryTask() throws Exception {
+        taskStatusRepository.save(testTaskStatus);
+        labelRepository.save(testLabel);
+        userRepository.save(testUser);
+        testTask.setAssignee(testUser);
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.getLabels().add(testLabel);
+        testTask.setName("XxXbrx name");
+        taskRepository.save(testTask);
+        StringBuilder query = new StringBuilder("?_end=100&_order=ASC&_sort=index&_start=0");
+        query.append("&assigneeId=" + testUser.getId());
+        query.append("&labelId=" + testLabel.getId());
+        query.append("&status=" + testTaskStatus.getSlug());
+        query.append("&titleCont=" + "xxx");
+        String queryString = query.toString();
+        var result = mockMvc.perform(get("/api/tasks" + queryString).with(token))
+                .andExpect(status().isOk())
+                .andReturn();
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray();
+        List<TaskDTO> response = objectMapper.readValue(body, new TypeReference<>() { });
+        assertThat(response.size() == 1);
+        assertThat(response.contains(taskMapper.map(testTask)));
+    }
+
 
     @Test
     public void testCreateTaskWithoutLabels() throws Exception {
@@ -218,7 +250,6 @@ public class TaskControllerTest {
                 .stream()
                 .map(Label::getId)
                 .collect(Collectors.toSet());
-        Set<Label> labels = labelRepository.findByIdIn(labelIdsFromRepo);
         TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
         taskUpdateDTO.setTitle(JsonNullable.of(testTask.getName() + " updated"));
         taskUpdateDTO.setIndex(JsonNullable.of(testTask.getIndex() + 10));
@@ -247,6 +278,13 @@ public class TaskControllerTest {
     public void testDeleteTask() throws Exception {
         taskRepository.save(testTask);
         var deleteTaskRequest = delete("/api/tasks/{id}", testTask.getId());
+        mockMvc.perform(deleteTaskRequest.with(token)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testDeleteIncorrectTask() throws Exception {
+        taskRepository.save(testTask);
+        var deleteTaskRequest = delete("/api/tasks/999");
         mockMvc.perform(deleteTaskRequest.with(token)).andExpect(status().isNoContent());
     }
 }
