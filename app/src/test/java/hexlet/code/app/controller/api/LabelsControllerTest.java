@@ -153,7 +153,6 @@ public class LabelsControllerTest {
     @Test
     public void testUpdateLabel() throws Exception {
         labelRepository.save(testLabel);
-        //Long createdLabelId = labelRepository.findByName(testLabel.getName()).get().getId();
         LabelUpdateDTO labelUpdateDTO = new LabelUpdateDTO();
         labelUpdateDTO.setName(JsonNullable.of(testLabel.getName() + " updated"));
         var updateLabelRequest = put("/api/labels/{id}", testLabel.getId())
