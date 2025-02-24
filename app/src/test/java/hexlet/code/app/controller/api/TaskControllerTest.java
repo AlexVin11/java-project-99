@@ -16,6 +16,7 @@ import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import hexlet.code.app.util.ModelGenerator;
+import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TaskControllerTest {
-    private static final String QUERY_STRING_EXAMPLE = "//https://java-task-manager-ru.hexlet.app/api/tasks"
-            + "?_end=100&_order=ASC&_sort=index&_start=0&"
-            + "assigneeId=1&labelId=2&status=draft&titleCont=ollen";
-
     @Autowired
     private WebApplicationContext wac;
 
@@ -122,9 +119,12 @@ public class TaskControllerTest {
                 .andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
-        var amountOfTaskFromResponse = objectMapper.readValue(body, TaskDTO[].class).length;
-        var amountOfTaskFromDb = taskRepository.count();
-        assertThat(amountOfTaskFromDb == amountOfTaskFromResponse);
+        List<TaskDTO> taskFromResponse = objectMapper.readValue(body, new TypeReference<>() { });
+        List<Task> tasksFromDb = taskRepository.findAll();
+        List<Task> taskModelFromResponse = taskFromResponse.stream()
+                .map(taskMapper::map)
+                .toList();
+        Assertions.assertThat(tasksFromDb).containsExactlyInAnyOrderElementsOf(taskModelFromResponse);
     }
 
     @Test
@@ -250,7 +250,6 @@ public class TaskControllerTest {
                 .stream()
                 .map(Label::getId)
                 .collect(Collectors.toSet());
-        Set<Label> labels = labelRepository.findByIdIn(labelIdsFromRepo);
         TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
         taskUpdateDTO.setTitle(JsonNullable.of(testTask.getName() + " updated"));
         taskUpdateDTO.setIndex(JsonNullable.of(testTask.getIndex() + 10));
@@ -279,6 +278,13 @@ public class TaskControllerTest {
     public void testDeleteTask() throws Exception {
         taskRepository.save(testTask);
         var deleteTaskRequest = delete("/api/tasks/{id}", testTask.getId());
+        mockMvc.perform(deleteTaskRequest.with(token)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testDeleteIncorrectTask() throws Exception {
+        taskRepository.save(testTask);
+        var deleteTaskRequest = delete("/api/tasks/999");
         mockMvc.perform(deleteTaskRequest.with(token)).andExpect(status().isNoContent());
     }
 }

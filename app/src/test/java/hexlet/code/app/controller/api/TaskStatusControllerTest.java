@@ -115,7 +115,9 @@ class TaskStatusControllerTest {
         assertThatJson(body).isArray();
         List<TaskStatus> statusesInDb = taskStatusRepository.findAll();
         List<TaskStatusDTO> dtoFromResponse = objectMapper.readValue(body, new TypeReference<>() { });
-        List<TaskStatus> modelFromResponse = dtoFromResponse.stream().map(taskStatusMapper::map).toList();
+        List<TaskStatus> modelFromResponse = dtoFromResponse.stream()
+                .map(taskStatusMapper::map)
+                .toList();
         Assertions.assertThat(statusesInDb).containsExactlyInAnyOrderElementsOf(modelFromResponse);
     }
 
@@ -159,7 +161,6 @@ class TaskStatusControllerTest {
         var createTaskStatusRequest = post("/api/task_statuses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testTaskStatus));
-        //mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isCreated());
         assertThat(taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get()).isNotNull();
         mockMvc.perform(createTaskStatusRequest.with(token)).andExpect(status().isUnprocessableEntity());
     }
@@ -200,7 +201,7 @@ class TaskStatusControllerTest {
     @Test
     void testDeleteIncorrectTaskStatus() throws Exception {
         taskStatusRepository.save(testTaskStatus);
-        var deleteRequest = delete("/api/task_statuses/999");
+        var deleteRequest = delete("/api/task_statuses/9999");
         mockMvc.perform(deleteRequest.with(token)).andExpect(status().isNoContent());
     }
 }

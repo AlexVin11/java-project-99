@@ -194,4 +194,11 @@ public class UsersControllerTest {
         var deleteUserRequest = delete("/api/users/{id}", testUser.getId());
         mockMvc.perform(deleteUserRequest.with(token)).andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    public void testDeleteIncorrectUser() throws Exception {
+        userRepository.save(testUser);
+        var deleteUserRequest = delete("/api/users/999");
+        mockMvc.perform(deleteUserRequest.with(token)).andExpect(status().isNotFound());
+    }
 }

@@ -189,4 +189,11 @@ public class LabelsControllerTest {
         var deleteLabelRequest = delete("/api/labels/{id}", testLabel.getId());
         mockMvc.perform(deleteLabelRequest.with(token)).andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    public void testDeleteIncorrectLabelWithoutConnectedTask() throws Exception {
+        labelRepository.save(testLabel);
+        var deleteLabelRequest = delete("/api/labels/999");
+        mockMvc.perform(deleteLabelRequest.with(token)).andExpect(status().isNoContent());
+    }
 }
