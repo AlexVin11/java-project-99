@@ -20,7 +20,7 @@ User cant be deleted if he has assigned Task.
 Task status cant be deleted if it connected to the Task.
 Task cant be created without Task status.
 
-Standard workflow looks like this:
+# Standard workflow looks like this:
 1. Log in or create a new user.
 2. Create a new Task status and Task label if needed.
 3. Create a new Task and choose a Task status and label.
