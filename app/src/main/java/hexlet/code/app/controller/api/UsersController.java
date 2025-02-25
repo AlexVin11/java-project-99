@@ -31,9 +31,10 @@ public class UsersController {
 
     @GetMapping()
     public ResponseEntity<List<UserDTO>> index() {
+        List<UserDTO> users = userService.getAll();
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(userService.getAll().size()))
-                .body(userService.getAll());
+                .header("X-Total-Count", String.valueOf(users.size()))
+                .body(users);
     }
 
     @GetMapping("/{id}")
