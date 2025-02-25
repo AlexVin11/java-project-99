@@ -1,16 +1,16 @@
 # Makefile
 
 install:
-	./gradle install
+	./gradlew install
 
 run-dist:
 	# Очистка от результатов предыдущей сборки
-	./gradle clean
+	./gradlew clean
 	# Создание jar исполняемого файла
-	./gradle installDist
+	./gradlew installDist
 
 test:
-	./gradle test
+	./gradlew test
 
 report:
-	./gradle jacocoTestReport
+	./gradlew jacocoTestReport
