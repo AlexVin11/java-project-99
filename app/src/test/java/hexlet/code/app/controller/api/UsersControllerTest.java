@@ -1,5 +1,6 @@
 package hexlet.code.app.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.app.component.AppInitializer;
 import hexlet.code.app.dto.UserDTO.UserDTO;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -108,9 +110,12 @@ public class UsersControllerTest {
                 .andReturn();
         var body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
-        var amountOfUsersInDb = userRepository.count();
-        var amountOfUsersInResponse = objectMapper.readValue(body, UserDTO[].class).length;
-        assertThat(amountOfUsersInDb == amountOfUsersInResponse);
+        List<User> usersInDb = userRepository.findAll();
+        List<UserDTO> usersInResponse = objectMapper.readValue(body, new TypeReference<>() { });
+        List<User> modelFromResponse = usersInResponse.stream()
+                .map(userMapper::map)
+                .toList();
+        assertThat(modelFromResponse.containsAll(usersInDb));
     }
 
     @Test
