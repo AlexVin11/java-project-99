@@ -10,6 +10,7 @@ plugins {
 	id("org.springframework.boot") version "3.4.0"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("com.github.ben-manes.versions") version "0.49.0"
+	id("io.sentry.jvm.gradle") version "5.2.0"
 }
 
 group = "hexlet.code"
@@ -54,6 +55,7 @@ dependencies {
 	implementation("net.datafaker:datafaker:2.0.2")
 	implementation("org.instancio:instancio-junit:3.3.1")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
+	implementation("io.sentry:sentry-opentelemetry-agent:8.2.0")
 }
 
 tasks.withType<Test> {
@@ -73,3 +75,18 @@ tasks.test {
 }
 
 tasks.jacocoTestReport { reports { xml.required.set(true) } }
+
+sentry {
+	// Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+	// This enables source context, allowing you to see your source
+	// code as part of your stack traces in Sentry.
+	includeSourceContext = true
+
+	org = "vinogradow-corp"
+	projectName = "java-spring-boot"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
+}
