@@ -14,10 +14,15 @@ These labels created by default: bug, feature.
 
 # Note:
 Only authenticated Users can work with swagger and use the app.
+
 To go to Swagger add "/swagger-ui/index.html" to url.
+
 User can delete and edit himself only.
+
 User cant be deleted if he has assigned Task.
+
 Task status cant be deleted if it connected to the Task.
+
 Task cant be created without Task status.
 
 # Standard workflow looks like this:
