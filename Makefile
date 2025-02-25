@@ -1,10 +1,16 @@
 # Makefile
 
 install:
-	make -C app install
+	./gradlew install
+
+run-dist:
+	# Очистка от результатов предыдущей сборки
+	./gradlew clean
+	# Создание jar исполняемого файла
+	./gradlew installDist
 
 test:
-	make -C app test
+	./gradlew test
 
 report:
-	make -C app report
+	./gradlew jacocoTestReport
