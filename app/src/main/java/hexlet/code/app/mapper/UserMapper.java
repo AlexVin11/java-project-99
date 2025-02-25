@@ -19,5 +19,6 @@ import org.mapstruct.ReportingPolicy;
 public abstract class UserMapper {
     public abstract User map(UserCreateDTO dto);
     public abstract UserDTO map(User model);
+    public abstract User map(UserDTO dto);
     public abstract void update(UserUpdateDTO dto, @MappingTarget User model);
 }
