@@ -12,7 +12,7 @@ These task statuses created by default: Draft, To review, To be fixed, To publis
 
 These labels created by default: bug, feature.
 
-Note:
+# Note:
 Only authenticated Users can work with swagger and use the app.
 To go to Swagger add "/swagger-ui/index.html" to url.
 User can delete and edit himself only.
