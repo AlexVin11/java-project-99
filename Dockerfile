@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN gradle wrapper
-
 RUN gradle installDist
 
 ENV SPRING_PROFILES_ACTIVE=production
