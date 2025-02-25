@@ -13,3 +13,11 @@ springdoc:
     path: /swagger-ui
   api-docs:
     path: /api-docs
+sentry:
+  dsn: https://0fbb2017c2e0689f01c7c06be2c8a75d@o4508878766342144.ingest.us.sentry.io/4508878770339840
+  # Add data like request headers and IP for users,
+  # see https://docs.sentry.io/platforms/java/guides/spring-boot/data-management/data-collected/ for more info
+  send-default-pii: true
+  # Set traces-sample-rate to 1.0 to capture 100% of transactions for tracing.
+  # We recommend adjusting this value in production.
+  traces-sample-rate: 1.0
