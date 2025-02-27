@@ -3,6 +3,7 @@ package hexlet.code.component;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
@@ -15,15 +16,19 @@ import java.util.Base64;
 @Component
 @Setter
 @Getter
-public final class RsaKeyProperties {
-    private RSAPublicKey rsaPublicKey;
+public class RsaKeyProperties {
+    @Value("${rsa.public-key}")
+    private String publicKeyPem;
+
+    @Value("${rsa.private-key}")
+    private String privateKeyPem;
+
     private RSAPrivateKey rsaPrivateKey;
+
+    private RSAPublicKey rsaPublicKey;
 
     @PostConstruct
     public void init() throws Exception {
-        String privateKeyPem = System.getenv("RSA_PRIVATE_KEY");
-        String publicKeyPem = System.getenv("RSA_PUBLIC_KEY");
-
         this.rsaPublicKey = getPublicKeyFromPem(publicKeyPem);
         this.rsaPrivateKey = getPrivateKeyFromPem(privateKeyPem);
     }
