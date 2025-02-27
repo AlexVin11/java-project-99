@@ -27,7 +27,7 @@ repositories {
 }
 
 application {
-	mainClass.set("hexlet.code.app.AppApplication")
+	mainClass.set("hexlet.code.AppApplication")
 }
 
 dependencies {
@@ -54,7 +54,7 @@ dependencies {
 	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
 	implementation("net.datafaker:datafaker:2.0.2")
 	implementation("org.instancio:instancio-junit:3.3.1")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 	implementation("io.sentry:sentry-opentelemetry-agent:8.2.0")
 }
 
