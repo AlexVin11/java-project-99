@@ -3,6 +3,7 @@ package hexlet.code.component;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.Base64;
 @Component
 @Setter
 @Getter
+@Slf4j
 public class RsaKeyProperties {
     @Value("${rsa.public-key}")
     private String publicKeyPem;
@@ -29,7 +31,9 @@ public class RsaKeyProperties {
 
     @PostConstruct
     public void init() throws Exception {
+        log.info("value of public key pem=" + publicKeyPem);
         this.rsaPublicKey = getPublicKeyFromPem(publicKeyPem);
+        log.info("value of private key pem=" + privateKeyPem);
         this.rsaPrivateKey = getPrivateKeyFromPem(privateKeyPem);
     }
 
