@@ -29,8 +29,8 @@ public class EncodersConfig {
 
     @Bean
     JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(rsaKeyProperties.getRsaPublicKey())
-                .privateKey(rsaKeyProperties.getRsaPrivateKey())
+        JWK jwk = new RSAKey.Builder(rsaKeyProperties.getPublicKey())
+                .privateKey(rsaKeyProperties.getPrivateKey())
                 .build();
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
@@ -38,6 +38,6 @@ public class EncodersConfig {
 
     @Bean
     JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.getRsaPublicKey()).build();
+        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.getPublicKey()).build();
     }
 }
