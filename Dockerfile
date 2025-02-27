@@ -1,9 +1,7 @@
 FROM gradle:8.5-jdk21
 
-WORKDIR /app
-
 COPY . .
 
-RUN gradle installDist
+RUN gradle clean build
 
 CMD ./build/install/app/bin/app

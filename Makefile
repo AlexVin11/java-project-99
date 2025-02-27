@@ -3,11 +3,11 @@
 install:
 	./gradlew install
 
-run-dist:
+clean-build:
 	# Очистка от результатов предыдущей сборки
 	./gradlew clean
 	# Создание jar исполняемого файла
-	./gradlew installDist
+	./gradlew build
 
 test:
 	./gradlew test
