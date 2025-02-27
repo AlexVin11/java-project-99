@@ -6,12 +6,12 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-cuph3q56l47c73cmbb80-a:5432/taskmanageronspringupdated
+    url: ${JDBC_DATABASE_URL}
     driver-class-name: org.postgresql.Driver
-    username: taskmanageronspringupdated_user
-    password: Y4aMUl0Fxqh2fI7c554IIBx48CDW1H3M
+    username: ${USERNAME}
+    password: ${PASSWORD}
   jpa:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-    show-sql: false
+      show-sql: false

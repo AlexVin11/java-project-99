@@ -1,13 +1,13 @@
-package hexlet.code.app.controller.api;
+package hexlet.code.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.app.dto.AuthRequest;
-import hexlet.code.app.model.User;
-import hexlet.code.app.repository.LabelRepository;
-import hexlet.code.app.repository.TaskRepository;
-import hexlet.code.app.repository.TaskStatusRepository;
-import hexlet.code.app.repository.UserRepository;
-import hexlet.code.app.util.ModelGenerator;
+import hexlet.code.dto.AuthRequest;
+import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.repository.UserRepository;
+import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

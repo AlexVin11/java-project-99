@@ -1,10 +1,10 @@
-package hexlet.code.app.util;
+package hexlet.code.util;
 
-import hexlet.code.app.model.Label;
-import hexlet.code.app.model.Task;
-import hexlet.code.app.model.TaskStatus;
-import hexlet.code.app.model.User;
-import hexlet.code.app.repository.TaskStatusRepository;
+import hexlet.code.model.Label;
+import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
+import hexlet.code.model.User;
+import hexlet.code.repository.TaskStatusRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public final class ModelGenerator {
                 .ignore(Select.field(Label::getId))
                 .ignore(Select.field(Label::getCreatedAt))
                 .ignore(Select.field(Label::getUpdatedAt))
-                .supply(Select.field(Label::getName), () -> faker.text().text(3, 1000))
+                .supply(Select.field(Label::getName), () -> faker.text().text(10))
                 .toModel();
     }
 }
